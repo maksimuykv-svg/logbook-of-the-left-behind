@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logbook of the Left Behind — NASA Space Apps 2026</title>
+<meta name="description" content="Four pieces of NASA hardware tell their own stories — from the Moon, Mars and deep space.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#080b16; --panel:#121830; --line:#2a3358; --text:#e8eaf3; --muted:#a3a9c4;
+  --dust:#e08a5c; --moon:#d5d9e2; --signal:#6fe0cf; --ok:#6fe0cf; --bad:#ff8c8c;
+  --serif:"Fraunces",Georgia,serif; --sans:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font:1.08rem/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:-1}
+a{color:var(--signal)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 1.25rem}
+h1,h2,h3{font-family:var(--serif);line-height:1.15;margin:0}
+
+/* hero */
+header.hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center;padding:4rem 0 2rem}
+.hero h1{font-size:clamp(2.6rem,9vw,6rem);font-weight:700;letter-spacing:-.02em;max-width:12ch}
+.hero p{max-width:34rem;color:var(--muted);font-size:1.2rem;margin:1.5rem 0 2rem}
+.btn{display:inline-block;background:var(--signal);color:#04120f;border:0;border-radius:999px;padding:.8rem 1.6rem;font:700 1rem var(--sans);cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:none;color:var(--text);border:2px solid var(--line)}
+.signal-note{margin-top:2.5rem;font-size:.95rem;color:var(--muted);border-left:3px solid var(--dust);padding-left:1rem;max-width:34rem}
+
+/* filter */
+.filters{position:sticky;top:0;z-index:5;background:rgba(8,11,22,.92);backdrop-filter:blur(8px);padding:.8rem 0;border-bottom:1px solid var(--line)}
+.filters .wrap{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.filters span{color:var(--muted);margin-right:.4rem}
+.chip{background:var(--panel);color:var(--text);border:2px solid var(--line);border-radius:999px;padding:.4rem 1rem;font:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--ink);border-color:var(--text)}
+
+/* entries */
+.entry{display:grid;grid-template-columns:1fr;gap:1.5rem;padding:4rem 0;border-bottom:1px solid var(--line)}
+.entry[hidden]{display:none}
+@media(min-width:820px){
+  .entry{grid-template-columns:1.05fr 1fr;gap:3rem;align-items:start}
+  .entry:nth-of-type(even) .photo{order:2}
+}
+.photo{margin:0;position:sticky;top:5rem}
+.photo .frame{aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#1b2347,#0d1226);border:1px solid var(--line);display:grid;place-items:center}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .ph{color:var(--muted);padding:1rem;text-align:center;font-size:.95rem}
+.photo figcaption{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.where{display:inline-block;font-size:.9rem;padding:.15rem .7rem;border-radius:6px;margin-bottom:.8rem;font-weight:700}
+.where.Moon{background:var(--moon);color:#10131c}
+.where.Mars{background:var(--dust);color:#1d0d05}
+.where.Deep{background:var(--signal);color:#04120f}
+.entry h2{font-size:clamp(1.8rem,4vw,2.6rem)}
+.status{color:var(--muted);margin:.4rem 0 1.2rem;font-style:italic}
+.entry blockquote{margin:0;font-family:var(--serif);font-size:1.15rem;line-height:1.7}
+.entry blockquote p{margin:0 0 1rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin:1.5rem 0 0;padding:0;list-style:none}
+.facts li{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem;font-size:.9rem;color:var(--muted)}
+.facts b{display:block;color:var(--text);font:700 1.25rem var(--serif)}
+.empty{padding:3rem 0;color:var(--muted)}
+
+/* quiz */
+#quiz{padding:5rem 0}
+#quiz h2{font-size:clamp(2rem,5vw,3rem);margin-bottom:.5rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.5rem;margin-top:1.5rem;max-width:720px}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:1.2rem}
+.progress i{display:block;height:100%;width:0;background:var(--signal);transition:width .4s}
+.opts{display:grid;gap:.7rem;margin:1.2rem 0}
+.opt{text-align:left;background:var(--ink);color:var(--text);border:2px solid var(--line);border-radius:10px;padding:.8rem 1rem;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--signal)}
+.opt.right{border-color:var(--ok);background:#0d2a27}
+.opt.wrong{border-color:var(--bad);background:#341618}
+.explain{min-height:3.2rem;color:var(--muted)}
+.score{font:700 3rem var(--serif)}
+footer{padding:3rem 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.progress i{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Logbook of the Left Behind</h1>
+    <p>Since the 1960s, NASA has left hardware on the Moon, on Mars and in deep space. Four machines tell you what it was like — in their own words.</p>
+    <a class="btn" href="#stories">Open the logbook</a>
+    <a class="btn ghost" href="#quiz">Skip to the quiz</a>
+    <p class="signal-note">First-person entries are fictional narration written for education. All dates and numbers are based on public NASA mission records.</p>
+  </div>
+</header>
+
+<nav class="filters" aria-label="Filter by location" id="stories">
+  <div class="wrap">
+    <span>Where are they?</span>
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="Moon" aria-pressed="false">Moon</button>
+    <button class="chip" data-f="Mars" aria-pressed="false">Mars</button>
+    <button class="chip" data-f="Deep" aria-pressed="false">Deep space</button>
+  </div>
+</nav>
+
+<main class="wrap" id="list" aria-live="polite"></main>
+
+<section id="quiz" class="wrap" aria-labelledby="qh">
+  <h2 id="qh">Did you read the logbook?</h2>
+  <p style="color:var(--muted)">Five questions. Pick an answer to see the explanation.</p>
+  <div class="card" id="qcard"></div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Made for the 2026 NASA Space Apps Challenge: “Abandoned but not Forgotten”. Photos are loaded from Wikimedia Commons (NASA public-domain or openly licensed images); each caption shows its author and licence. Not an official NASA product.
+  </div>
+</footer>
+
+<script>
+/* ---------- DATA ---------- */
+const STORIES = [
+ { id:"lrv", loc:"Moon", locLabel:"Moon", name:"Apollo 15 Lunar Roving Vehicle",
+   status:"Parked at Hadley–Apennine since August 1971. Silent, but still there.",
+   query:"Apollo 15 Lunar Roving Vehicle", alt:"Lunar rover parked on the Moon",
+   text:[
+    "I was folded flat inside a landing module and unpacked in an afternoon. Two astronauts sat on my seats, and we drove toward mountains that no human had ever seen up close.",
+    "Dust got into everything. My fenders broke on the first trip, and the crew fixed me with tape and a map. It worked.",
+    "When the mission ended they parked me facing the TV camera, so Earth could watch the liftoff. Then they left. I have been watching the same sky ever since."],
+   facts:[["1971","year of use"],["≈28 km","distance driven"],["3 days","on the surface"]] },
+ { id:"opp", loc:"Mars", locLabel:"Mars", name:"Opportunity",
+   status:"Last signal: 10 June 2018. Declared complete in February 2019.",
+   query:"Opportunity rover Mars", alt:"Opportunity rover on Mars",
+   text:[
+    "My mission was supposed to last 90 sols. I kept going for almost 15 years.",
+    "I crossed plains, climbed into craters and found minerals that formed in water. Mars once had it. That was my big discovery.",
+    "In 2018 a dust storm covered the planet and blocked my sunlight. My solar panels went quiet. Engineers sent more than a thousand recovery commands. I never answered, but I had already driven farther than any other rover on another world."],
+   facts:[["2004","landed"],["45 km","distance driven"],["≈15 yrs","90-sol plan, 15 years of work"]] },
+ { id:"ing", loc:"Mars", locLabel:"Mars", name:"Ingenuity",
+   status:"Final flight: January 2024. Grounded after rotor damage.",
+   query:"Ingenuity helicopter Mars", alt:"Ingenuity helicopter on Mars",
+   text:[
+    "I was a technology test. Five flights, maybe. Nobody had ever flown a helicopter on another planet, and the air on Mars is about one percent as thick as on Earth.",
+    "My first flight lasted 39 seconds. Then I flew 71 more times, and I became the scout who found safe paths for the Perseverance rover.",
+    "On my last flight my rotor blades were damaged. I can’t fly anymore, but I’m still standing in the Jezero crater, and I’m proof that flying on Mars is possible."],
+   facts:[["2021","first flight"],["72","flights total"],["5","flights planned"]] },
+ { id:"voy", loc:"Deep", locLabel:"Deep space", name:"Voyager 1",
+   status:"Still transmitting. Over 160 times farther from the Sun than Earth.",
+   query:"Voyager program spacecraft", alt:"Voyager spacecraft",
+   text:[
+    "I left Earth in 1977 with a computer far weaker than your phone. I visited Jupiter and Saturn, then kept going.",
+    "In 2012 I crossed into interstellar space, the first human-made object to do it. A single message from me takes about a day to reach you.",
+    "I carry a golden record with greetings, music and sounds of Earth, in case someone out there finds me. My power is slowly fading, but I am still talking."],
+   facts:[["1977","launched"],["2012","entered interstellar space"],["~1 day","one-way signal time"]] }
+];
+
+const QUIZ = [
+ {q:"Which machine was supposed to work for only about 90 sols but lasted almost 15 years?",
+  o:["Opportunity","Ingenuity","Voyager 1","Lunar Roving Vehicle"],a:0,
+  e:"Opportunity landed on Mars in 2004 and kept going until the dust storm of 2018."},
+ {q:"What was Ingenuity’s big first on Mars?",
+  o:["First rover to drill rock","First powered flight on another planet","First photo of Earth","First human footprint"],a:1,
+  e:"Ingenuity made the first powered, controlled flight on another planet."},
+ {q:"Where is Voyager 1 now?",
+  o:["On the Moon","In orbit around Mars","In interstellar space","Back on Earth"],a:2,
+  e:"Voyager 1 crossed into interstellar space in 2012 and is still sending data."},
+ {q:"Why did the Apollo 15 crew park the rover facing the TV camera?",
+  o:["To save fuel","So it wouldn’t roll away","So Earth could watch the liftoff","To hide it from dust"],a:2,
+  e:"The camera on the rover let mission control watch the lunar module take off."},
+ {q:"Why is flying on Mars so hard?",
+  o:["There is no gravity","The air is very thin","The ground is too hot","There is too much water"],a:1,
+  e:"Mars’s atmosphere is only about 1% as dense as Earth’s, so rotors have little air to push."}
+];
+
+/* ---------- STARS ---------- */
+(function(){
+  const c=document.getElementById("stars"),x=c.getContext("2d");let s=[];
+  function size(){c.width=innerWidth;c.height=innerHeight;
+    s=Array.from({length:Math.min(220,Math.floor(innerWidth*innerHeight/6000))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3+.2,a:Math.random()*.7+.2}));draw()}
+  function draw(){x.clearRect(0,0,c.width,c.height);s.forEach(p=>{x.globalAlpha=p.a;x.fillStyle="#fff";x.beginPath();x.arc(p.x,p.y,p.r,0,6.3);x.fill()})}
+  addEventListener("resize",size);size();
+})();
+
+/* ---------- IMAGES (Wikimedia Commons API) ---------- */
+const clean = h => { const d=document.createElement("div"); d.innerHTML=h||""; return d.textContent.trim(); };
+async function loadPhoto(story, frame, cap){
+  const u="https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=8"
+    +"&gsrsearch="+encodeURIComponent(story.query+" filetype:bitmap")
+    +"&prop=imageinfo&iiprop=url|extmetadata|mime&iiurlwidth=900&format=json&origin=*";
+  try{
+    const r=await fetch(u); const j=await r.json();
+    const pages=Object.values(j.query.pages).sort((a,b)=>a.index-b.index);
+    const p=pages.find(p=>p.imageinfo&&/jpeg|png/.test(p.imageinfo[0].mime)&&p.imageinfo[0].thumburl);
+    if(!p) throw 0;
+    const i=p.imageinfo[0], m=i.extmetadata||{};
+    const img=new Image(); img.alt=story.alt;
+    img.onload=()=>{frame.replaceChildren(img);
+      cap.innerHTML=`Photo: <a href="${i.descriptionurl}" target="_blank" rel="noopener">${clean(p.title.replace("File:",""))}</a> — ${clean(m.Artist&&m.Artist.value)||"NASA"}, ${clean(m.LicenseShortName&&m.LicenseShortName.value)||"public domain"} (Wikimedia Commons)`;};
+    img.onerror=()=>{frame.firstChild.textContent="Photo unavailable — see Wikimedia Commons.";};
+    img.src=i.thumburl;
+  }catch(e){ frame.firstChild.textContent="Photo unavailable offline."; }
+}
+
+/* ---------- RENDER STORIES ---------- */
+const list=document.getElementById("list");
+STORIES.forEach(s=>{
+  const el=document.createElement("article"); el.className="entry"; el.dataset.loc=s.loc;
+  el.innerHTML=`
+   <figure class="photo"><div class="frame"><div class="ph">Loading photo…</div></div><figcaption>Loading credit…</figcaption></figure>
+   <div>
+     <span class="where ${s.loc}">${s.locLabel}</span>
+     <h2>${s.name}</h2>
+     <p class="status">${s.status}</p>
+     <blockquote>${s.text.map(t=>`<p>${t}</p>`).join("")}</blockquote>
+     <ul class="facts">${s.facts.map(f=>`<li><b>${f[0]}</b>${f[1]}</li>`).join("")}</ul>
+   </div>`;
+  list.appendChild(el);
+  loadPhoto(s, el.querySelector(".frame"), el.querySelector("figcaption"));
+});
+const empty=document.createElement("p"); empty.className="empty"; empty.hidden=true;
+empty.textContent="No machines here yet. Pick another location."; list.appendChild(empty);
+
+/* ---------- FILTER ---------- */
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  let n=0; document.querySelectorAll(".entry").forEach(e=>{const ok=b.dataset.f==="all"||e.dataset.loc===b.dataset.f;e.hidden=!ok;if(ok)n++});
+  empty.hidden=n>0;
+}));
+
+/* ---------- QUIZ ---------- */
+const card=document.getElementById("qcard"); let qi=0,score=0;
+function showQ(){
+  const q=QUIZ[qi];
+  card.innerHTML=`<div class="progress"><i style="width:${qi/QUIZ.length*100}%"></i></div>
+   <p style="color:var(--muted);margin:0">Question ${qi+1} of ${QUIZ.length}</p>
+   <h3 style="margin-top:.4rem">${q.q}</h3>
+   <div class="opts">${q.o.map((t,i)=>`<button class="opt" data-i="${i}">${t}</button>`).join("")}</div>
+   <p class="explain" id="ex"></p><button class="btn" id="next" hidden>${qi===QUIZ.length-1?"See result":"Next question"}</button>`;
+  card.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>answer(+b.dataset.i)));
+  card.querySelector("#next").onclick=()=>{qi++;qi<QUIZ.length?showQ():done()};
+}
+function answer(i){
+  const q=QUIZ[qi]; if(i===q.a) score++;
+  card.querySelectorAll(".opt").forEach((b,k)=>{b.disabled=true;if(k===q.a)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
+  card.querySelector("#ex").textContent=(i===q.a?"Correct! ":"Not quite. ")+q.e;
+  card.querySelector("#next").hidden=false; card.querySelector("#next").focus();
+}
+function done(){
+  const msg=score>=4?"Mission control is proud of you.":score>=2?"Good flight. Read the logbook again for a perfect landing.":"Rough landing. The logbook is waiting for a second try.";
+  card.innerHTML=`<div class="progress"><i style="width:100%"></i></div><div class="score">${score} / ${QUIZ.length}</div><p>${msg}</p><button class="btn" id="again">Play again</button>`;
+  card.querySelector("#again").onclick=()=>{qi=0;score=0;showQ()};
+}
+showQ();
+</script>
+</body>
+</html>
